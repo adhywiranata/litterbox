@@ -32,6 +32,7 @@ export default class LiteEditor extends React.Component {
     };
 
     window.editor.require = (moduleName) => {
+      this.setState({ moduleErr: '' });
       switch (moduleName) {
         case 'lodash': return require('lodash');
         default: moduleErr(moduleName); return {};
