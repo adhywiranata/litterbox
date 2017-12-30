@@ -39,7 +39,8 @@ export default class Editor extends React.Component {
   render() {
     return (
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div>
+        <div style={{ flex: 1 }}>
+          <h3>JS Editor</h3>
           <AceEditor
             mode="javascript"
             theme="solarized_light"
@@ -48,18 +49,24 @@ export default class Editor extends React.Component {
             name="ace-editor"
             editorProps={{ $blockScrolling: true }}
             fontSize={16}
+            width="100%"
+            height="70vh"
           />
         </div>
-        <div id="editor-log" style={{ textAlign: 'left', backgroundColor: '#353535', color: '#FFFFFF', width: 300, height: 300, padding: '5px 20px' }}>
-          <p style={{ color: 'red' }}>
-            {this.state.err}
-          </p>
-          {this.state.logs.map((log, i) => <p key={i}>{log}</p>)}
+        <div style={{ flex: 1 }}>
+          <h3>Console</h3>
+          <div id="editor-log" style={{ textAlign: 'left', backgroundColor: '#353535', color: '#FFFFFF', width: '100%', height: '70vh', padding: '5px 20px', boxSizing: 'border-box' }}>
+            <p style={{ color: 'red' }}>
+              {this.state.err}
+            </p>
+            {this.state.logs.map((log, i) => <p key={i}>{log}</p>)}
+          </div>
         </div>
-        <div>
-          <p>
+        <div style={{ flex: 1 }}>
+          <h3>Test Output</h3>
+          <div style={{ backgroundColor: '#F5F5F5', width: '100%', height: '70vh', boxSizing: 'border-box', padding: '5px 20px', textAlign: 'left' }}>
             {this.state.code}
-          </p>
+          </div>
         </div>
       </div>
     );
