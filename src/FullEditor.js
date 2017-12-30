@@ -34,6 +34,7 @@ export default class LiteEditor extends React.Component {
     window.editor.require = (moduleName) => {
       this.setState({ moduleErr: '' });
       switch (moduleName) {
+        case 'fox': return { name: 'foxy' };
         case 'lodash': return require('lodash');
         default: moduleErr(moduleName); return {};
       }
@@ -42,6 +43,7 @@ export default class LiteEditor extends React.Component {
 
   onChange = (code) => {
     this.setState({ logs: [] });
+
     try {
       let editorFriendlyCode = code.replace(/console.log/g, 'editor.log');
       editorFriendlyCode = editorFriendlyCode.replace(/require/g, 'editor.require');
