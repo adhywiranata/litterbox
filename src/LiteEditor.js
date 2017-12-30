@@ -6,7 +6,7 @@ import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_light';
 
-export default class Editor extends React.Component {
+export default class LiteEditor extends React.Component {
   constructor() {
     super();
     this.state = {
