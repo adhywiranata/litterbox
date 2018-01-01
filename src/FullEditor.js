@@ -1,12 +1,11 @@
 /* eslint no-eval: "off" */
+/* eslint global-require: "off" */
 
 import React from 'react';
 import AceEditor from 'react-ace';
 
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_light';
-
-// import EDITOR_LODASH from 'lodash';
 
 export default class LiteEditor extends React.Component {
   constructor() {
@@ -20,7 +19,6 @@ export default class LiteEditor extends React.Component {
   }
 
   componentDidMount() {
-
     const moduleErr = (moduleName) => {
       this.setState({ moduleErr: `No module named ${moduleName}` });
     };
@@ -73,19 +71,40 @@ export default class LiteEditor extends React.Component {
         </div>
         <div style={{ flex: 1 }}>
           <h3>Console</h3>
-          <div id="editor-log" style={{ textAlign: 'left', backgroundColor: '#353535', color: '#FFFFFF', width: '100%', height: '70vh', padding: '5px 20px', boxSizing: 'border-box' }}>
-          <p style={{ color: 'red' }}>
+          <div
+            id="editor-log"
+            style={{
+              textAlign: 'left',
+              backgroundColor: '#353535',
+              color: '#FFFFFF',
+              width: '100%',
+              height: '70vh',
+              padding: '5px 20px',
+              boxSizing: 'border-box',
+              }}
+          >
+            <p style={{ color: 'red' }}>
               {this.state.moduleErr}
             </p>
             <p style={{ color: 'red' }}>
               {this.state.err}
             </p>
-            {this.state.logs.map((log, i) => <p key={i}>{JSON.stringify(log)}</p>)}
+            {this.state.logs.map((log, i) => (
+              <p key={i}>{JSON.stringify(log)}</p>
+            ))}
           </div>
         </div>
         <div style={{ flex: 1 }}>
           <h3>Test Output</h3>
-          <div style={{ backgroundColor: '#F5F5F5', width: '100%', height: '70vh', boxSizing: 'border-box', padding: '5px 20px', textAlign: 'left' }}>
+          <div style={{
+              backgroundColor: '#F5F5F5',
+              width: '100%',
+              height: '70vh',
+              boxSizing: 'border-box',
+              padding: '5px 20px',
+              textAlign: 'left',
+            }}
+          >
             {this.state.code}
           </div>
         </div>
