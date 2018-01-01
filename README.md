@@ -15,4 +15,9 @@
 - [] moment
 - [] rambda
 - [] redux
-- [] fs (make sure this works in DO, not nodejs fs)
+- [] fs (make sure this works in browser, not nodejs fs)
+
+## Identified Issues
+
+- [x] Correctly parses arrays and objects
+- [] Objects shows its stringified version instead of real object
