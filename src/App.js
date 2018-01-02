@@ -3,12 +3,28 @@ import './App.css';
 import FullEditor from './FullEditor';
 import ModeNav from './ModeNav';
 
+import { getQueryString } from './helpers';
+
 export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      languageMode: 'js',
+      languageMode: 'js-lite',
     };
+  }
+
+  componentWillMount() {
+    const languageMode = getQueryString('mode');
+    let isValidMode = true;
+    switch (languageMode) {
+      case 'js':
+      case 'js-lite':
+      case 'react':
+      case 'html': break;
+      default: isValidMode = false;
+    }
+
+    if (isValidMode) this.setState({ languageMode });
   }
 
   toggleMode = (languageMode) => {
