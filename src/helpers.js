@@ -1,16 +1,17 @@
-const parseStringToJSX = (codeStr) => {
-  // inner helpers
-  const reverseString = str => str.split('').reverse().join('');
+/* eslint no-eval: "off" */
+const reverseString = str => str.split('').reverse().join('');
 
+const parseStringToJSX = (codeStr) => {
   // logic code
 
   const reactTree = [];
 
-  function parseTag(elem) {
-  
+  function parseTag(elemParam) {
+    let elem = elemParam;
+
     if (!elem.includes('<')) {
       elem = elem.trim();
-      
+
       // if elem is not empty after trimmed, it must be a text node
       if (elem !== '') {
         reactTree.push({ textNode: elem });
@@ -68,45 +69,45 @@ const parseStringToJSX = (codeStr) => {
       // store current el character to prevEl for later comparison
       prevEl = el;
     }
-    
+
     openTag = openTag.trim();
-    
+
     // remove the open tag from the rest of the elem
     elem = elem.replace(`<${openTag}>`, '');
-    
+
     // iterate the stringified elem from behind to get the closing tag
     let elemRev = reverseString(elem);
-    
+
     for(let el of elemRev) {
-      if(isEndTagDone) {
+      if (isEndTagDone) {
         break;
       }
 
-      if(el === '>') {
+      if (el === '>') {
         isEvalEndTag = true;
       }
       
-      if(el === '/') {
+      if (el === '/') {
         isEvalEndTag = false;
         isEndTagDone = true;
       }
       
-      if(el === '<') {
+      if (el === '<') {
         throw Error('Whoops! Looks like you forgot to close the closing tag!');
       }
       
-      if(el !== '>' && el !== '/' && el !== '<') {
+      if (el !== '>' && el !== '/' && el !== '<') {
         endTag += el;
       }
     }
-    
+
     endTag = reverseString(endTag.trim());
-    
-    // we've obtained both openTag and endTag. but openTag might have some props, so we need to handle that!
-    
+    // we've obtained both openTag and endTag.
+    // but openTag might have some props, so we need to handle that!
+
     // HANDLE PROPS HERE
-    let props = {};
-    let tagProps = openTag.split(' ').slice(1);
+    const props = {};
+    const tagProps = openTag.split(' ').slice(1);
     for(let tagProp of tagProps) {
       let localProp = tagProp.split('=');
       
@@ -119,30 +120,24 @@ const parseStringToJSX = (codeStr) => {
       }
       props[localProp[0]] = val;
     }
-    
-    if(openTag.indexOf(' ') !== -1) {
+
+    if (openTag.indexOf(' ') !== -1) {
       openTag = openTag.slice(0, openTag.indexOf(' '));
     }
-    
-    if(openTag !== endTag && !isSingleTag) {
+
+    if (openTag !== endTag && !isSingleTag) {
       throw Error(`open and closing tag are not matched: ${openTag} and ${endTag}`);
     }
-    
+
     // remove the open tag from the rest of the elem
     elem = elem.replace(`</${endTag}>`, '');
-    
-    
-    let tagObj = { tag: openTag, props };
-    
+
+
+    const tagObj = { tag: openTag, props };
+
     reactTree.push(tagObj);
     return parseTag(elem);
-    
   }
-
-  const sampleCode = `
-  <div className="yeah" test="wow">
-    <p num={5}><span><em>Hello world</em></span></p>
-  </div>`;
 
   parseTag(codeStr);
 
@@ -151,4 +146,5 @@ const parseStringToJSX = (codeStr) => {
 
 export {
   parseStringToJSX,
+  reverseString,
 };

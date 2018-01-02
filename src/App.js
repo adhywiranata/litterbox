@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-// import LiteEditor from './LiteEditor';
 import FullEditor from './FullEditor';
 import ModeNav from './ModeNav';
 

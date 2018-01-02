@@ -90,6 +90,19 @@ export default class FullEditor extends React.Component {
     };
   }
 
+  _runLiteJSCode = () => {
+    window.localLogs = [];
+    const { code } = this.state;
+    try {
+      const editorFriendlyCode = code.replace(/console.log/g, 'editor.log');
+      eval(editorFriendlyCode);
+      this.setState({ logs: window.localLogs });
+      this.setState({ err: '' });
+    } catch (e) {
+      this.setState({ err: String(e) });
+    }
+  }
+
   _runJSCode = () => {
     window.localLogs = [];
     const { code } = this.state;
@@ -105,31 +118,19 @@ export default class FullEditor extends React.Component {
   }
 
   _runReactCode = () => {
-    const { code } = this.state;
     const reactTree = parseStringToJSX(this.state.code);
     this.setState({ reactTree });
   }
 
-  // reactRender = (jsxStringified) => {
-  //   /*
-  //   case study
-  //   <div>
-  //     Hello world
-  //   </div>
-  //   */
-  //   return jsx('div', null, [
-  //     jsx('p', null, jsx('h1', { num: 5, go: 'gooo!' }, 'hello bigger')),
-  //     jsx('h2', null, 'hello smaller'),
-  //   ]);
-  // }
-
   _renderEditorPane = (languageMode) => {
     if (languageMode === 'js' || languageMode === 'js-lite') {
+      const runnerFunction = languageMode === 'js' ? this._runJSCode : this._runLiteJSCode;
+
       return (
         <div style={{ flex: 1 }}>
           <div style={textEditorPaneStyle}>
             <h3>JS Editor</h3>
-            <button onClick={this._runJSCode} style={smallBtnStyle}>
+            <button onClick={runnerFunction} style={smallBtnStyle}>
               <strong>RUN JS CODE</strong>
             </button>
           </div>
@@ -153,7 +154,10 @@ export default class FullEditor extends React.Component {
         <div style={{ flex: 1 }}>
           <div style={textEditorPaneStyle}>
             <h3>React Editor</h3>
-            <button onClick={this._runReactCode} style={smallBtnStyle}>
+            <button
+              onClick={this._runReactCode}
+              style={smallBtnStyle}
+            >
               <strong>RUN REACT CODE</strong>
             </button>
           </div>
@@ -168,6 +172,29 @@ export default class FullEditor extends React.Component {
             width="100%"
             height="70vh"
           />
+        </div>
+      );
+    }
+
+    return null;
+  }
+
+  _renderConsolePane = (languageMode) => {
+    if (languageMode !== 'html') {
+      return (
+        <div style={{ flex: 1 }}>
+          <h3>Console</h3>
+          <div id="editor-log" style={terminalPaneStyle}>
+            <p style={{ color: 'red' }}>
+              {this.state.moduleErr}
+            </p>
+            <p style={{ color: 'red' }}>
+              {this.state.err}
+            </p>
+            {this.state.logs.map((log, i) => (
+              <p key={i}>{JSON.stringify(log)}</p>
+            ))}
+          </div>
         </div>
       );
     }
@@ -222,26 +249,7 @@ export default class FullEditor extends React.Component {
     return (
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         {this._renderEditorPane(languageMode)}
-        <div style={{ flex: 1 }}>
-          <h3>Console</h3>
-          <div id="editor-log" style={terminalPaneStyle}>
-            <p style={{ color: 'red' }}>
-              {this.state.moduleErr}
-            </p>
-            <p style={{ color: 'red' }}>
-              {this.state.err}
-            </p>
-            {this.state.logs.map((log, i) => (
-              <p key={i}>{JSON.stringify(log)}</p>
-            ))}
-          </div>
-        </div>
-        {/* <div style={{ flex: 1 }}>
-          <h3>Test Output</h3>
-          <div style={editorPaneStyle}>
-            {this.state.code}
-          </div>
-        </div> */}
+        {this._renderConsolePane(languageMode)}
         {this._renderOutputPane(languageMode)}
       </div>
     );
