@@ -7,6 +7,8 @@ import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_light';
 
+import { parseStringToJSX } from './helpers';
+
 const jsx = React.createElement;
 
 const smallBtnStyle = {
@@ -53,6 +55,7 @@ export default class LiteEditor extends React.Component {
       logs: [],
       err: '',
       moduleErr: '',
+      reactTree: [],
     };
   }
 
@@ -102,6 +105,8 @@ export default class LiteEditor extends React.Component {
 
   _runReactCode = () => {
     const { code } = this.state;
+    const reactTree = parseStringToJSX();
+    this.setState({ reactTree });
   }
 
   reactRender = (jsxStringified) => {
@@ -112,7 +117,7 @@ export default class LiteEditor extends React.Component {
     </div>
     */
     return jsx('div', null, [
-      jsx('p', null, jsx('h1', null, 'hello bigger')),
+      jsx('p', null, jsx('h1', { num: 5, go: 'gooo!' }, 'hello bigger')),
       jsx('h2', null, 'hello smaller'),
     ]);
   }
@@ -169,6 +174,33 @@ export default class LiteEditor extends React.Component {
     return null;
   }
 
+  renderTreeRecursively = (jsxToRender) => {
+    // jsxToRender is an array containing [{ tag, props, or textNode }]
+    const jsxParent = { ...jsxToRender[0] };
+
+    if (jsxToRender.length === 0) {
+      return null;
+    }
+
+    if (jsxToRender.length === 1 && !!jsxParent.textNode) {
+      return jsxParent.textNode;
+    }
+
+    const remainder = jsxToRender.slice(1);
+
+    return jsx(
+      jsxParent.tag,
+      jsxParent.props,
+      this.renderTreeRecursively(remainder),
+    );
+  }
+
+  renderReactTree = () => {
+    const renderer = this.renderTreeRecursively(this.state.reactTree);
+    console.log(renderer);
+    return renderer;
+  }
+
   render() {
     const { languageMode } = this.props;
     return (
@@ -197,7 +229,8 @@ export default class LiteEditor extends React.Component {
         <div style={{ flex: 1 }}>
           <h3>React Output</h3>
           <div style={outputPaneStyle}>
-            {this.reactRender(this.state.reactElem)}
+            {/* {this.reactRender(this.state.reactElem)} */}
+            {this.renderReactTree()}
           </div>
         </div>
       </div>
