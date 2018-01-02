@@ -55,9 +55,9 @@ export default class FullEditor extends React.Component {
   constructor() {
     super();
     this.state = {
-      code: '',
-      htmlMarkup: '',
-      cssCode: '',
+      code: '// code javascript here.. 🐱',
+      htmlMarkup: '<!-- code HTML here.. 🐱 -->',
+      cssCode: '/* code CSS here.. 🐱 */',
       logs: [],
       err: '',
       moduleErr: '',
