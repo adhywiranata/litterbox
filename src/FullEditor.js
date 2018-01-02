@@ -86,7 +86,7 @@ export default class LiteEditor extends React.Component {
     };
   }
 
-  _runCode = () => {
+  _runJSCode = () => {
     window.localLogs = [];
     const { code } = this.state;
     try {
@@ -98,6 +98,10 @@ export default class LiteEditor extends React.Component {
     } catch (e) {
       this.setState({ err: String(e) });
     }
+  }
+
+  _runReactCode = () => {
+    const { code } = this.state;
   }
 
   reactRender = (jsxStringified) => {
@@ -113,14 +117,14 @@ export default class LiteEditor extends React.Component {
     ]);
   }
 
-  render() {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
+  _renderEditor = (languageMode) => {
+    if (languageMode === 'js' || languageMode === 'js-lite') {
+      return (
         <div style={{ flex: 1 }}>
           <div style={textEditorPaneStyle}>
             <h3>JS Editor</h3>
-            <button onClick={this._runCode} style={smallBtnStyle}>
-              <strong>RUN CODE</strong>
+            <button onClick={this._runJSCode} style={smallBtnStyle}>
+              <strong>RUN JS CODE</strong>
             </button>
           </div>
           <AceEditor
@@ -135,6 +139,41 @@ export default class LiteEditor extends React.Component {
             height="70vh"
           />
         </div>
+      );
+    }
+
+    if (languageMode === 'react') {
+      return (
+        <div style={{ flex: 1 }}>
+          <div style={textEditorPaneStyle}>
+            <h3>React Editor</h3>
+            <button onClick={this._runReactCode} style={smallBtnStyle}>
+              <strong>RUN REACT CODE</strong>
+            </button>
+          </div>
+          <AceEditor
+            mode="javascript"
+            theme="solarized_light"
+            onChange={this.onChange}
+            value={this.state.code}
+            name="ace-editor"
+            editorProps={{ $blockScrolling: true }}
+            fontSize={16}
+            width="100%"
+            height="70vh"
+          />
+        </div>
+      );
+    }
+
+    return null;
+  }
+
+  render() {
+    const { languageMode } = this.props;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        {this._renderEditor(languageMode)}
         <div style={{ flex: 1 }}>
           <h3>Console</h3>
           <div id="editor-log" style={terminalPaneStyle}>

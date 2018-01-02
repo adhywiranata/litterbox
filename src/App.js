@@ -26,7 +26,7 @@ export default class App extends React.Component {
           mode={this.state.languageMode}
           toggleMode={this.toggleMode}
         />
-        <FullEditor />
+        <FullEditor languageMode={this.state.languageMode} />
       </div>
     );
   }
