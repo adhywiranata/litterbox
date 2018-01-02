@@ -3,7 +3,8 @@
     "parser": "babel-eslint",
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "react/no-array-index-key": "off"
+        "react/no-array-index-key": "off",
+        "no-underscore-dangle": "off"
     },
     "globals": {
         "window": true

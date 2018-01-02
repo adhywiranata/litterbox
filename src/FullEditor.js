@@ -9,6 +9,42 @@ import 'brace/theme/solarized_light';
 
 const jsx = React.createElement;
 
+const smallBtnStyle = {
+  margin: 10,
+  backgroundColor: '#353535',
+  color: '#FFFFFF',
+  border: 0,
+  borderRadius: 4,
+  outline: 'none',
+};
+
+const terminalPaneStyle = {
+  textAlign: 'left',
+  backgroundColor: '#353535',
+  color: '#FFFFFF',
+  width: '100%',
+  height: '70vh',
+  padding: '5px 20px',
+  boxSizing: 'border-box',
+};
+
+const outputPaneStyle = {
+  textAlign: 'left',
+  backgroundColor: '#FFFFFF',
+  width: '100%',
+  height: '70vh',
+  padding: '5px 20px',
+  boxSizing: 'border-box',
+  border: '1px solid rgba(0,0,0,0.1)',
+};
+
+const textEditorPaneStyle = {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingLeft: 20,
+};
+
 export default class LiteEditor extends React.Component {
   constructor() {
     super();
@@ -21,13 +57,23 @@ export default class LiteEditor extends React.Component {
   }
 
   componentDidMount() {
+    this._setEditorEnvironment();
+  }
+
+  onChange = (code) => {
+    this.setState({ code });
+  }
+
+  _setEditorEnvironment = () => {
     const moduleErr = (moduleName) => {
       this.setState({ moduleErr: `No module named ${moduleName}` });
     };
 
+    window.localLogs = [];
     window.editor = {};
+
     window.editor.log = (...args) => {
-      this.setState({ logs: [...this.state.logs, ...args] });
+      window.localLogs = [...window.localLogs, ...args];
       console.log(...args);
     };
 
@@ -40,18 +86,18 @@ export default class LiteEditor extends React.Component {
     };
   }
 
-  onChange = (code) => {
-    this.setState({ logs: [] });
-
+  _runCode = () => {
+    window.localLogs = [];
+    const { code } = this.state;
     try {
       let editorFriendlyCode = code.replace(/console.log/g, 'editor.log');
       editorFriendlyCode = editorFriendlyCode.replace(/require/g, 'editor.require');
       eval(editorFriendlyCode);
+      this.setState({ logs: window.localLogs });
       this.setState({ err: '' });
     } catch (e) {
       this.setState({ err: String(e) });
     }
-    this.setState({ code });
   }
 
   reactRender = (jsxStringified) => {
@@ -71,7 +117,12 @@ export default class LiteEditor extends React.Component {
     return (
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ flex: 1 }}>
-          <h3>JS Editor</h3>
+          <div style={textEditorPaneStyle}>
+            <h3>JS Editor</h3>
+            <button onClick={this._runCode} style={smallBtnStyle}>
+              <strong>RUN CODE</strong>
+            </button>
+          </div>
           <AceEditor
             mode="javascript"
             theme="solarized_light"
@@ -86,18 +137,7 @@ export default class LiteEditor extends React.Component {
         </div>
         <div style={{ flex: 1 }}>
           <h3>Console</h3>
-          <div
-            id="editor-log"
-            style={{
-              textAlign: 'left',
-              backgroundColor: '#353535',
-              color: '#FFFFFF',
-              width: '100%',
-              height: '70vh',
-              padding: '5px 20px',
-              boxSizing: 'border-box',
-              }}
-          >
+          <div id="editor-log" style={terminalPaneStyle}>
             <p style={{ color: 'red' }}>
               {this.state.moduleErr}
             </p>
@@ -111,29 +151,13 @@ export default class LiteEditor extends React.Component {
         </div>
         {/* <div style={{ flex: 1 }}>
           <h3>Test Output</h3>
-          <div style={{
-              backgroundColor: '#F5F5F5',
-              width: '100%',
-              height: '70vh',
-              boxSizing: 'border-box',
-              padding: '5px 20px',
-              textAlign: 'left',
-            }}
-          >
+          <div style={editorPaneStyle}>
             {this.state.code}
           </div>
         </div> */}
         <div style={{ flex: 1 }}>
           <h3>React Output</h3>
-          <div style={{
-              backgroundColor: '#F5F5F5',
-              width: '100%',
-              height: '70vh',
-              boxSizing: 'border-box',
-              padding: '5px 20px',
-              textAlign: 'left',
-            }}
-          >
+          <div style={outputPaneStyle}>
             {this.reactRender(this.state.reactElem)}
           </div>
         </div>
