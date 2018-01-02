@@ -18,6 +18,7 @@ const smallBtnStyle = {
   border: 0,
   borderRadius: 4,
   outline: 'none',
+  cursor: 'pointer',
 };
 
 const terminalPaneStyle = {
@@ -122,7 +123,7 @@ export default class LiteEditor extends React.Component {
     ]);
   }
 
-  _renderEditor = (languageMode) => {
+  _renderEditorPane = (languageMode) => {
     if (languageMode === 'js' || languageMode === 'js-lite') {
       return (
         <div style={{ flex: 1 }}>
@@ -174,6 +175,21 @@ export default class LiteEditor extends React.Component {
     return null;
   }
 
+  _renderOutputPane = (languageMode) => {
+    if (languageMode === 'react') {
+      return (
+        <div style={{ flex: 1 }}>
+          <h3>React Output</h3>
+          <div style={outputPaneStyle}>
+            {this.renderReactTree()}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  }
+
   renderTreeRecursively = (jsxToRender) => {
     // jsxToRender is an array containing [{ tag, props, or textNode }]
     const jsxParent = { ...jsxToRender[0] };
@@ -205,7 +221,7 @@ export default class LiteEditor extends React.Component {
     const { languageMode } = this.props;
     return (
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {this._renderEditor(languageMode)}
+        {this._renderEditorPane(languageMode)}
         <div style={{ flex: 1 }}>
           <h3>Console</h3>
           <div id="editor-log" style={terminalPaneStyle}>
@@ -226,13 +242,7 @@ export default class LiteEditor extends React.Component {
             {this.state.code}
           </div>
         </div> */}
-        <div style={{ flex: 1 }}>
-          <h3>React Output</h3>
-          <div style={outputPaneStyle}>
-            {/* {this.reactRender(this.state.reactElem)} */}
-            {this.renderReactTree()}
-          </div>
-        </div>
+        {this._renderOutputPane(languageMode)}
       </div>
     );
   }
