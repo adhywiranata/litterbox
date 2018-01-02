@@ -7,6 +7,8 @@ import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_light';
 
+const jsx = React.createElement;
+
 export default class LiteEditor extends React.Component {
   constructor() {
     super();
@@ -52,6 +54,19 @@ export default class LiteEditor extends React.Component {
     this.setState({ code });
   }
 
+  reactRender = (jsxStringified) => {
+    /*
+    case study
+    <div>
+      Hello world
+    </div>
+    */
+    return jsx('div', null, [
+      jsx('p', null, jsx('h1', null, 'hello bigger')),
+      jsx('h2', null, 'hello smaller'),
+    ]);
+  }
+
   render() {
     return (
       <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -94,7 +109,7 @@ export default class LiteEditor extends React.Component {
             ))}
           </div>
         </div>
-        <div style={{ flex: 1 }}>
+        {/* <div style={{ flex: 1 }}>
           <h3>Test Output</h3>
           <div style={{
               backgroundColor: '#F5F5F5',
@@ -106,6 +121,20 @@ export default class LiteEditor extends React.Component {
             }}
           >
             {this.state.code}
+          </div>
+        </div> */}
+        <div style={{ flex: 1 }}>
+          <h3>React Output</h3>
+          <div style={{
+              backgroundColor: '#F5F5F5',
+              width: '100%',
+              height: '70vh',
+              boxSizing: 'border-box',
+              padding: '5px 20px',
+              textAlign: 'left',
+            }}
+          >
+            {this.reactRender(this.state.reactElem)}
           </div>
         </div>
       </div>
