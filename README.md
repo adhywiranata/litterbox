@@ -12,11 +12,11 @@
 ## Third Party Modules
 
 - [x] lodash
-- [] react
-- [] moment
-- [] rambda
-- [] redux
-- [] fs (make sure this works in browser, not nodejs fs)
+- [ ] react
+- [ ] moment
+- [ ] rambda
+- [ ] redux
+- [ ] fs (make sure this works in browser, not nodejs fs)
 
 ## Testing Code
 

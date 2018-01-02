@@ -35,7 +35,10 @@ export default class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">LitterBox</h1>
+          <h1 className="App-title">
+            LITTERBOX
+            <span role="img" aria-label="cat"> 🐱</span>
+          </h1>
         </header>
         <ModeNav
           mode={this.state.languageMode}
