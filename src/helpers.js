@@ -144,7 +144,7 @@ const parseStringToJSX = (codeStr) => {
     <p num={5}><span><em>Hello world</em></span></p>
   </div>`;
 
-  parseTag(sampleCode);
+  parseTag(codeStr);
 
   return reactTree;
 };

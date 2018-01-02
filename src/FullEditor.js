@@ -48,7 +48,7 @@ const textEditorPaneStyle = {
   paddingLeft: 20,
 };
 
-export default class LiteEditor extends React.Component {
+export default class FullEditor extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -106,22 +106,22 @@ export default class LiteEditor extends React.Component {
 
   _runReactCode = () => {
     const { code } = this.state;
-    const reactTree = parseStringToJSX();
+    const reactTree = parseStringToJSX(this.state.code);
     this.setState({ reactTree });
   }
 
-  reactRender = (jsxStringified) => {
-    /*
-    case study
-    <div>
-      Hello world
-    </div>
-    */
-    return jsx('div', null, [
-      jsx('p', null, jsx('h1', { num: 5, go: 'gooo!' }, 'hello bigger')),
-      jsx('h2', null, 'hello smaller'),
-    ]);
-  }
+  // reactRender = (jsxStringified) => {
+  //   /*
+  //   case study
+  //   <div>
+  //     Hello world
+  //   </div>
+  //   */
+  //   return jsx('div', null, [
+  //     jsx('p', null, jsx('h1', { num: 5, go: 'gooo!' }, 'hello bigger')),
+  //     jsx('h2', null, 'hello smaller'),
+  //   ]);
+  // }
 
   _renderEditorPane = (languageMode) => {
     if (languageMode === 'js' || languageMode === 'js-lite') {
