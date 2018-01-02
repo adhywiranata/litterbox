@@ -5,7 +5,10 @@ import React from 'react';
 import AceEditor from 'react-ace';
 
 import 'brace/mode/javascript';
+import 'brace/mode/html';
+import 'brace/mode/css';
 import 'brace/theme/solarized_light';
+import 'brace/theme/solarized_dark';
 
 import { parseStringToJSX } from './helpers';
 
@@ -53,6 +56,8 @@ export default class FullEditor extends React.Component {
     super();
     this.state = {
       code: '',
+      htmlMarkup: '',
+      cssCode: '',
       logs: [],
       err: '',
       moduleErr: '',
@@ -64,8 +69,16 @@ export default class FullEditor extends React.Component {
     this._setEditorEnvironment();
   }
 
-  onChange = (code) => {
+  onChangeJSCode = (code) => {
     this.setState({ code });
+  }
+
+  onChangeHTMLCode = (htmlMarkup) => {
+    this.setState({ htmlMarkup });
+  }
+
+  onChangeCSSCode = (cssCode) => {
+    this.setState({ cssCode });
   }
 
   _setEditorEnvironment = () => {
@@ -129,7 +142,7 @@ export default class FullEditor extends React.Component {
       return (
         <div style={{ flex: 1 }}>
           <div style={textEditorPaneStyle}>
-            <h3>JS Editor</h3>
+            <h3>{languageMode === 'js-lite' && 'Lite'} JS Editor</h3>
             <button onClick={runnerFunction} style={smallBtnStyle}>
               <strong>RUN JS CODE</strong>
             </button>
@@ -137,7 +150,7 @@ export default class FullEditor extends React.Component {
           <AceEditor
             mode="javascript"
             theme="solarized_light"
-            onChange={this.onChange}
+            onChange={this.onChangeJSCode}
             value={this.state.code}
             name="ace-editor"
             editorProps={{ $blockScrolling: true }}
@@ -164,7 +177,7 @@ export default class FullEditor extends React.Component {
           <AceEditor
             mode="javascript"
             theme="solarized_light"
-            onChange={this.onChange}
+            onChange={this.onChangeJSCode}
             value={this.state.code}
             name="ace-editor"
             editorProps={{ $blockScrolling: true }}
@@ -173,6 +186,51 @@ export default class FullEditor extends React.Component {
             height="70vh"
           />
         </div>
+      );
+    }
+
+    if (languageMode === 'html') {
+      return (
+        [
+          <div style={{ flex: 1 }} key="_htmlEditorKey">
+            <div style={textEditorPaneStyle}>
+              <h3>HTML Editor</h3>
+            </div>
+            <AceEditor
+              mode="html"
+              theme="solarized_light"
+              onChange={this.onChangeHTMLCode}
+              value={this.state.htmlMarkup}
+              name="ace-editor"
+              editorProps={{ $blockScrolling: true }}
+              fontSize={16}
+              width="100%"
+              height="70vh"
+            />
+          </div>,
+          <div style={{ flex: 1 }} key="_cssEditorKey">
+            <div style={textEditorPaneStyle}>
+              <h3>CSS Editor</h3>
+              <button
+                onClick={this._runReactCode}
+                style={smallBtnStyle}
+              >
+                <strong>RENDER PAGE</strong>
+              </button>
+            </div>
+            <AceEditor
+              mode="css"
+              theme="solarized_dark"
+              onChange={this.onChangeCSSCode}
+              value={this.state.cssCode}
+              name="ace-editor"
+              editorProps={{ $blockScrolling: true }}
+              fontSize={16}
+              width="100%"
+              height="70vh"
+            />
+          </div>,
+        ]
       );
     }
 
@@ -209,6 +267,17 @@ export default class FullEditor extends React.Component {
           <h3>React Output</h3>
           <div style={outputPaneStyle}>
             {this.renderReactTree()}
+          </div>
+        </div>
+      );
+    }
+
+    if (languageMode === 'html') {
+      return (
+        <div style={{ flex: 1 }}>
+          <h3>Output</h3>
+          <div style={outputPaneStyle}>
+            OUTPUT
           </div>
         </div>
       );
