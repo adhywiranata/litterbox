@@ -113,7 +113,7 @@ const parseStringToJSX = (codeStr) => {
       // handle props with propName = {val} style
       let val;
       if(localProp[1][0] === '{' && localProp[1][localProp[1].length - 1] === '}') {
-        val = eval(localProp[1].slice(1, localProp.length)); 
+        val = eval('(' + localProp[1].slice(1, localProp[1].length - 1) + ')');
       } else {
         val = eval(localProp[1]);
       }
