@@ -6,7 +6,8 @@
 
 - [x] JavaScript LiteEditor
 - [ ] HTML / CSS ViewEditor
-- [ ] ES6 Modules Editor
+- [ ] JavaScript Editor (with predefined third-party modules)
+- [ ] React Editor
 
 ## Third Party Modules
 
@@ -16,6 +17,15 @@
 - [] rambda
 - [] redux
 - [] fs (make sure this works in browser, not nodejs fs)
+
+## Testing Code
+
+In order to test codes, we need several tools/library:
+
+- Esprima: EcmaScript Parser to analyze ES syntax and identify variables and function declarations
+- Jest: Unit tests JavaScript functions
+- Enzyme: Unit Test React Components
+- Cheerio: test a rendered DOM
 
 ## Identified Issues
 
