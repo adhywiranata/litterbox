@@ -12,6 +12,8 @@ import 'brace/theme/solarized_dark';
 
 import { parseStringToJSX } from './helpers';
 
+const esprima = require('esprima');
+
 const jsx = React.createElement;
 
 const smallBtnStyle = {
@@ -55,7 +57,7 @@ export default class FullEditor extends React.Component {
   constructor() {
     super();
     this.state = {
-      code: '// code javascript here.. 🐱',
+      jsCode: '// code javascript here.. 🐱',
       htmlMarkup: '<!-- code HTML here.. 🐱 -->',
       cssCode: '/* code CSS here.. 🐱 */',
       mergedHtmlCssScript: '',
@@ -63,6 +65,9 @@ export default class FullEditor extends React.Component {
       err: '',
       moduleErr: '',
       reactTree: [],
+      analysis: {
+        js: [],
+      },
     };
   }
 
@@ -70,8 +75,8 @@ export default class FullEditor extends React.Component {
     this._setEditorEnvironment();
   }
 
-  onChangeJSCode = (code) => {
-    this.setState({ code });
+  onChangeJSCode = (jsCode) => {
+    this.setState({ jsCode });
   }
 
   onChangeHTMLCode = (htmlMarkup) => {
@@ -105,10 +110,14 @@ export default class FullEditor extends React.Component {
   }
 
   _runLiteJSCode = () => {
+    // invoke js syntax analyzer
+    this._analyzeJSCode();
+
+    // process the code
     window.localLogs = [];
-    const { code } = this.state;
+    const { jsCode } = this.state;
     try {
-      const editorFriendlyCode = code.replace(/console.log/g, 'editor.log');
+      const editorFriendlyCode = jsCode.replace(/console.log/g, 'editor.log');
       eval(editorFriendlyCode);
       this.setState({ logs: window.localLogs });
       this.setState({ err: '' });
@@ -118,10 +127,14 @@ export default class FullEditor extends React.Component {
   }
 
   _runJSCode = () => {
+    // invoke js syntax analyzer
+    this._analyzeJSCode();
+
+    // process the code
     window.localLogs = [];
-    const { code } = this.state;
+    const { jsCode } = this.state;
     try {
-      let editorFriendlyCode = code.replace(/console.log/g, 'editor.log');
+      let editorFriendlyCode = jsCode.replace(/console.log/g, 'editor.log');
       editorFriendlyCode = editorFriendlyCode.replace(/require/g, 'editor.require');
       eval(editorFriendlyCode);
       this.setState({ logs: window.localLogs });
@@ -132,7 +145,7 @@ export default class FullEditor extends React.Component {
   }
 
   _runReactCode = () => {
-    const reactTree = parseStringToJSX(this.state.code);
+    const reactTree = parseStringToJSX(this.state.jsCode);
     this.setState({ reactTree });
   }
 
@@ -155,6 +168,12 @@ export default class FullEditor extends React.Component {
     this.setState({ mergedHtmlCssScript: mergedScript });
   }
 
+  _analyzeJSCode = () => {
+    const result = esprima.parseScript(this.state.jsCode);
+    console.log(result.body);
+    this.setState({ analysis: { js: result.body } });
+  }
+
   _renderEditorPane = (languageMode) => {
     if (languageMode === 'js' || languageMode === 'js-lite') {
       const runnerFunction = languageMode === 'js' ? this._runJSCode : this._runLiteJSCode;
@@ -171,7 +190,7 @@ export default class FullEditor extends React.Component {
             mode="javascript"
             theme="solarized_light"
             onChange={this.onChangeJSCode}
-            value={this.state.code}
+            value={this.state.jsCode}
             name="ace-editor"
             editorProps={{ $blockScrolling: true }}
             fontSize={16}
@@ -198,7 +217,7 @@ export default class FullEditor extends React.Component {
             mode="javascript"
             theme="solarized_light"
             onChange={this.onChangeJSCode}
-            value={this.state.code}
+            value={this.state.jsCode}
             name="ace-editor"
             editorProps={{ $blockScrolling: true }}
             fontSize={16}
@@ -310,6 +329,56 @@ export default class FullEditor extends React.Component {
     return null;
   }
 
+  _renderAnalyzerPane = (languageMode) => {
+    const jsCode = this.state.analysis.js;
+    if (languageMode === 'js' || languageMode === 'js-lite') {
+      return (
+        <div style={{ flex: 1 }}>
+          <h3>Code Analysis</h3>
+          <div style={{ ...outputPaneStyle, padding: 20, overflow: 'auto' }}>
+            {/* {JSON.stringify(jsCode)} */}
+            <h3>in-code Variables</h3>
+            {jsCode
+              .filter(n => n.type === 'VariableDeclaration')
+              .map((node, i) => {
+                const declaration = node.declarations[0];
+                return (
+                  <div key={i} style={{ margin: 10, padding: 5, border: '1px solid rgba(0,0,0,0.2)' }}>
+                    {/* <p>CODE: {JSON.stringify(node)}</p> */}
+                    <p>NAME: {declaration.id.name}</p>
+                    <p>VALUE: {declaration.init ? JSON.stringify(declaration.init.value) : 'undefined'}</p>
+                  </div>
+                );
+              })
+            }
+            <h3>Detected Functions</h3>
+            {jsCode
+              .filter(n => n.type === 'FunctionDeclaration')
+              .map((node, i) => {
+                return (
+                  <div key={i} style={{ margin: 10, padding: 5, border: '1px solid rgba(0,0,0,0.2)' }}>
+                    {/* <p>CODE: {JSON.stringify(node)}</p> */}
+                    <p>NAME: {node.id.name}</p>
+                    <p>PARAMS:
+                      { node.params.length > 0 && (
+                        <ul>
+                          {node.params.map((param, k) => <li key={k}>{param.name}</li>)}
+                        </ul>
+                      )}
+                      { node.params.length === 0 && <span> none</span> }
+                    </p>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  }
+
   renderTreeRecursively = (jsxToRender) => {
     // jsxToRender is an array containing [{ tag, props, or textNode }]
     const jsxParent = { ...jsxToRender[0] };
@@ -344,6 +413,7 @@ export default class FullEditor extends React.Component {
         {this._renderEditorPane(languageMode)}
         {this._renderConsolePane(languageMode)}
         {this._renderOutputPane(languageMode)}
+        {this._renderAnalyzerPane(languageMode)}
       </div>
     );
   }
