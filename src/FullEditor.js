@@ -58,6 +58,7 @@ export default class FullEditor extends React.Component {
       code: '// code javascript here.. 🐱',
       htmlMarkup: '<!-- code HTML here.. 🐱 -->',
       cssCode: '/* code CSS here.. 🐱 */',
+      mergedHtmlCssScript: '',
       logs: [],
       err: '',
       moduleErr: '',
@@ -133,6 +134,25 @@ export default class FullEditor extends React.Component {
   _runReactCode = () => {
     const reactTree = parseStringToJSX(this.state.code);
     this.setState({ reactTree });
+  }
+
+  _runHtmlCode = () => {
+    const pureHtmlMarkup = this.state.htmlMarkup;
+    let mergedScript = '';
+    const cssStyles = this.state.cssCode;
+    const cssToInject = `<style>${cssStyles}</style>`;
+    // inject css script inside <head>
+    if (pureHtmlMarkup.includes('<head>')) {
+      const headTagEndPos = pureHtmlMarkup.indexOf('<head>') + 6;
+      mergedScript = pureHtmlMarkup.slice(0, headTagEndPos) + cssToInject + pureHtmlMarkup.slice(headTagEndPos);
+      // console.log(mergedScript)
+    }
+
+    if (!pureHtmlMarkup.includes('<head>')) {
+      mergedScript = cssToInject + pureHtmlMarkup;
+    }
+
+    this.setState({ mergedHtmlCssScript: mergedScript });
   }
 
   _renderEditorPane = (languageMode) => {
@@ -212,7 +232,7 @@ export default class FullEditor extends React.Component {
             <div style={textEditorPaneStyle}>
               <h3>CSS Editor</h3>
               <button
-                onClick={this._runReactCode}
+                onClick={this._runHtmlCode}
                 style={smallBtnStyle}
               >
                 <strong>RENDER PAGE</strong>
@@ -278,7 +298,7 @@ export default class FullEditor extends React.Component {
           <h3>Output</h3>
           <div style={outputPaneStyle}>
             <iframe
-              srcDoc={this.state.htmlMarkup}
+              srcDoc={this.state.mergedHtmlCssScript}
               title="HTML"
               style={{ width: '100%', height: '100%', border: 0 }}
             />
