@@ -145,9 +145,9 @@ export default class FullEditor extends React.Component {
     if (pureHtmlMarkup.includes('<head>')) {
       const headTagEndPos = pureHtmlMarkup.indexOf('<head>') + 6;
       mergedScript = pureHtmlMarkup.slice(0, headTagEndPos) + cssToInject + pureHtmlMarkup.slice(headTagEndPos);
-      // console.log(mergedScript)
     }
 
+    // when <head> not found, inject css script on top
     if (!pureHtmlMarkup.includes('<head>')) {
       mergedScript = cssToInject + pureHtmlMarkup;
     }
