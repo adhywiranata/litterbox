@@ -39,7 +39,7 @@ const outputPaneStyle = {
   backgroundColor: '#FFFFFF',
   width: '100%',
   height: '70vh',
-  padding: '5px 20px',
+  padding: 0,
   boxSizing: 'border-box',
   border: '1px solid rgba(0,0,0,0.1)',
 };
@@ -277,7 +277,11 @@ export default class FullEditor extends React.Component {
         <div style={{ flex: 1 }}>
           <h3>Output</h3>
           <div style={outputPaneStyle}>
-            OUTPUT
+            <iframe
+              srcDoc={this.state.htmlMarkup}
+              title="HTML"
+              style={{ width: '100%', height: '100%', border: 0 }}
+            />
           </div>
         </div>
       );
